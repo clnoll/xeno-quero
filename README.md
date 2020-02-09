@@ -1,0 +1,1 @@
+Client library for the [Xeno-canto API](https://www.xeno-canto.org/article/153).
