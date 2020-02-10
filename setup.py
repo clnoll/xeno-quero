@@ -18,4 +18,5 @@ setup(
         'requests==2.22.0'
     ],
     include_package_data=True,
+    entry_points={"console_scripts": ["xeno-quero = xeno_quero.query:main"]},
 )
