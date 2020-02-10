@@ -24,6 +24,7 @@ class Client:
                 ]
         }
         '''
+        self.base_url = RECORDINGS_URL
         data = self._query(query)
 
         if summary:
@@ -59,9 +60,12 @@ class Client:
 
     def get_recordings(self, recordings, query, page, n_pages, metadata_only=False, overwrite=False):
         if 'page=' not in query and page < n_pages:
-            urls = [f'{query}&page={p}' for p in range(page, n_pages)]
+            urls = [f'{self.base_url}?query={query}&page={p}' for p in range(page, n_pages)]
             for response in fetch_urls(urls):
-                recordings.extend(response['recordings'])
+                if 'recordings' in response:
+                    recordings.extend(response['recordings'])
+                else:
+                    print(f'error: {response}')
 
         if not self.directory:
             return recordings
@@ -91,6 +95,6 @@ class Client:
         return download_multi(urls_filepaths, overwrite=overwrite)
 
     def _query(self, query):
-        resp = requests.get(f'{RECORDINGS_URL}?query={query}')
+        resp = requests.get(f'{self.base_url}?query={query}')
         resp.raise_for_status()
         return json.loads(resp.content.decode('utf-8'))

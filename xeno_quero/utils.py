@@ -1,6 +1,7 @@
 import json
 import os
 from multiprocessing.pool import ThreadPool
+from urllib import request
 
 import aiohttp
 import paco
@@ -11,20 +12,18 @@ global TOTAL
 TOTAL = 0
 
 
-from urllib import request
-
-async def _fetch(url):
+async def _fetch_content(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            return res
+            return await res.content.read()
 
 
 async def _fetch_urls(urls):
     data = []
-    responses = await paco.map(_fetch, urls, limit=settings.CONCURRENT_LIMIT)
+    responses = await paco.map(_fetch_content, urls, limit=settings.CONCURRENT_LIMIT)
 
     for res in responses:
-        data.append[json.loads(res.content.decode('utf-8'))]
+        data.append(json.loads(res))
 
     return data
 
@@ -49,8 +48,10 @@ def _download_if_not_exists(url_filepath):
 
 
 def download_multi(urls_filepaths, overwrite=False):
-    pool = ThreadPool(settings.THREAD_LIMIT)
+    global TOTAL
+    TOTAL = 0
 
+    pool = ThreadPool(settings.THREAD_LIMIT)
     if overwrite:
         pool.map(_download, urls_filepaths)
         return len(urls_filepaths)
