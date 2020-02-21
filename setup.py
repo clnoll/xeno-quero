@@ -13,9 +13,9 @@ setup(
     description='Client library for the Xeno-canto API.',
     packages=find_packages(),
     install_requires=[
-        'aiohttp==3.6.2'
-        'paco==0.2.3',
-        'requests==2.22.0'
+        'aiohttp>=3.6',
+        'paco>=0.2.3',
+        'requests>=2.22.0',
     ],
     include_package_data=True,
     entry_points={"console_scripts": ["xeno-quero = xeno_quero.query:main"]},
