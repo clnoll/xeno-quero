@@ -1,5 +1,6 @@
 import json
 import os
+import time
 from multiprocessing.pool import ThreadPool
 from urllib import request
 
@@ -36,6 +37,7 @@ def _download(url_filepath):
     url, filepath = url_filepath
     filepath.parent.mkdir(parents=True, exist_ok=True)
     request.urlretrieve(url, filepath)
+    time.sleep(5)
 
 
 def _download_if_not_exists(url_filepath):
