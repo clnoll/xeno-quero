@@ -61,7 +61,7 @@ class Client:
 
     def get_recordings(self, recordings, query, page, n_pages, metadata_only=False, overwrite=False):
         if 'page=' not in query and page < n_pages:
-            urls = [f'{self.base_url}?query={query}&page={p}' for p in range(page, n_pages)]
+            urls = [f'{self.base_url}?query={query}&page={p}' for p in range(page + 1, n_pages + 1)]
             for response in fetch_urls(urls):
                 if 'recordings' in response:
                     recordings.extend(response['recordings'])
