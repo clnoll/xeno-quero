@@ -33,21 +33,19 @@ def fetch_urls(urls):
     return paco.run(_fetch_urls(urls))
 
 
-def _download(url_filepath):
-    url, filepath = url_filepath
+def _download(url, filepath):
     filepath.parent.mkdir(parents=True, exist_ok=True)
     request.urlretrieve(url, filepath)
     time.sleep(5)
 
 
-def _download_if_not_exists(url_filepath):
+def _download_if_not_exists(url, filepath):
     global TOTAL
 
-    url, filepath = url_filepath
     if os.path.exists(filepath):
         return
     else:
-        _download(url_filepath)
+        _download(url, filepath)
         TOTAL += 1
 
 
@@ -57,28 +55,26 @@ def download_multi(urls_filepaths, overwrite=False):
 
     pool = ThreadPool(settings.THREAD_LIMIT)
     if overwrite:
-        pool.map(_download, urls_filepaths)
+        pool.starmap(_download, urls_filepaths)
         return len(urls_filepaths)
     else:
-        pool.map(_download_if_not_exists, urls_filepaths)
+        pool.starmap(_download_if_not_exists, urls_filepaths)
         return TOTAL
 
 
-def _write(data_filepath):
-    data, filepath = data_filepath
+def _write(data, filepath):
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, 'w') as fp:
         json.dump(data, fp)
 
 
-def _write_if_not_exists(url_filepath):
+def _write_if_not_exists(data, filepath):
     global TOTAL
 
-    url, filepath = url_filepath
     if os.path.exists(filepath):
         return
     else:
-        _write(url_filepath)
+        _write(data, filepath)
         TOTAL += 1
 
 
@@ -88,8 +84,8 @@ def write_multi(data_filepaths, overwrite=False):
 
     pool = ThreadPool(settings.THREAD_LIMIT)
     if overwrite:
-        pool.map(_write, data_filepaths)
+        pool.starmap(_write, data_filepaths)
         return len(data_filepaths)
     else:
-        pool.map(_write_if_not_exists, data_filepaths)
+        pool.starmap(_write_if_not_exists, data_filepaths)
         return TOTAL
