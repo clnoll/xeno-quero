@@ -33,7 +33,9 @@ def fetch_urls(urls):
 
 
 def _download(url_filepath):
-    request.urlretrieve(*url_filepath)
+    url, filepath = url_filepath
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    request.urlretrieve(url, filepath)
 
 
 def _download_if_not_exists(url_filepath):
@@ -62,6 +64,7 @@ def download_multi(urls_filepaths, overwrite=False):
 
 def _write(data_filepath):
     data, filepath = data_filepath
+    filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, 'w') as fp:
         json.dump(data, fp)
 

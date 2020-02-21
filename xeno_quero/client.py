@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import requests
 
@@ -8,7 +9,7 @@ from xeno_quero.utils import download_multi, fetch_urls, write_multi
 
 class Client:
     def __init__(self, directory=None):
-        self.directory = directory or XENOCANTO_DATA_DIRECTORY
+        self.directory = Path(directory or XENOCANTO_DATA_DIRECTORY)
 
     def query(self, query, summary=False, metadata_only=False, overwrite=False):
         '''
@@ -81,14 +82,18 @@ class Client:
 
     def download_meta(self, recordings, overwrite=False):
         data_filepaths = [
-            (r, f'{self.directory}/{r["id"]}.json') for r in recordings
+            (r, self.directory / f'{r["gen"]}-{r["sp"]}' / f'{r["id"]}.json') for r in recordings
         ]
         print(f'Downloading up to {len(recordings)} recording metadata files.')
         return write_multi(data_filepaths, overwrite=overwrite)
 
     def download_recordings(self, recordings, overwrite=False):
         urls_filepaths = [
-            (f'http:{r["file"]}', f'{self.directory}/{r["id"]}.mp3') for r in recordings
+            (
+                f'http:{r["file"]}',
+                self.directory / f'{r["gen"]}-{r["sp"]}' / f'{r["id"]}.mp3',
+            )
+            for r in recordings
         ]
 
         print(f'Downloading up to {len(recordings)} recordings.')
