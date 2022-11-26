@@ -89,6 +89,7 @@ class Client:
     def download_recordings(self, recordings, overwrite=False):
         urls_filepaths = [
             (f'http:{r["file"]}', f'{self.directory}/{r["id"]}.mp3') for r in recordings
+            if r.get('file')
         ]
 
         print(f'Downloading up to {len(recordings)} recordings.')

@@ -1,7 +1,7 @@
 import json
 import os
+import urllib
 from multiprocessing.pool import ThreadPool
-from urllib import request
 
 import aiohttp
 import paco
@@ -11,11 +11,21 @@ from xeno_quero import settings
 global TOTAL
 TOTAL = 0
 
+global url_fetch_errors
+url_fetch_errors = {}
+
+global download_errors
+download_errors = {}
+
 
 async def _fetch_content(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as res:
-            return await res.content.read()
+            try:
+                return await res.content.read()
+            except Exception as exc:
+                import ipdb; ipdb.set_trace()
+                raise exc
 
 
 async def _fetch_urls(urls):
@@ -33,7 +43,11 @@ def fetch_urls(urls):
 
 
 def _download(url_filepath):
-    request.urlretrieve(*url_filepath)
+    try:
+        urllib.request.urlretrieve(*url_filepath)
+    except urllib.error.URLError as exc:
+        import ipdb; ipdb.set_trace()
+        raise exc
 
 
 def _download_if_not_exists(url_filepath):
